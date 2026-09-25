@@ -1,0 +1,60 @@
+
+# Gateway for the runtab-help team, founded by runtab-help.
+#
+# Declared HERE, in the agent's own gitops repo — NOT minted by the
+# operator — so the gateway is a first-class, declarative resource that's
+# reversible by deleting it. The AgentWorkstation's
+# runtime.shared.gatewayRef points at this gateway by name.
+#
+# Nobody "owns" this via ownerReferences: its lifecycle is git/ArgoCD.
+# Pruning this repo removes BOTH the agent and this gateway (the
+# AgentGateway controller cascades its own Pod / PVC / Service / Route).
+#
+# A new team starts as "a gateway with one agent" — point another
+# AgentWorkstation's gatewayRef at "runtab-help" and it
+# joins this same gateway pod. The operator treats that identically to
+# any shared agent; there is no dedicated-vs-shared code path.
+#
+# namespace + commonLabels are applied by base/kustomization.yaml.
+apiVersion: agentoffice.ai/v1alpha1
+kind: AgentGateway
+metadata:
+  # Named for the TEAM, not the founding agent, so the second agent to
+  # arrive reads as a colleague rather than a guest in someone's gateway.
+  name: runtab-help
+spec:
+  displayName: Runtab help desk
+  description: "Dedicated gateway for agent runtab-help"
+  # Same OpenClaw runtime image the AgentWorkstation pins, so the
+  # dedicated pod matches the agent's intended runtime.
+  image: quay-quay-quay-test.apps.salamander.aimlworkbench.com/deanpeterson/openclaw:v2026.7.1
+  # Codex-backed agent: the gateway pod reads ~/.codex/auth.json from the
+  # cluster-managed Codex subscription secret (the same ESO-synced secret
+  # research-gateway uses). The agent never sees raw credentials.
+  codexCredentialsSecretRef: codex-subscription-credentials
+  # The real browser. Convention: a node-host on the KubeVirt VM dials this
+  # gateway with display name fedora-black-zebra-36-<gateway>; the operator
+  # auto-approves the pairing request whose display name contains
+  # nodeHostRef.name. Start it on the VM as
+  #   openclaw-nodehost-<gateway>.service (clone the newsroom unit; token
+  #   from Secret <gateway>-token). Without a paired node-host, agents can
+  # web_fetch HTML shells but cannot render React sites like redhat.com.
+  nodeHostRef:
+    name: fedora-black-zebra-36-runtab-help
+    namespace: default
+  autoApproveNodeHost: true
+  # Bill turns to the subscription, never a metered API key.
+  #
+  # OpenClaw 2026.7.x folded provider `openai-codex` into canonical
+  # `openai`, so one gateway config can describe only ONE OpenAI route.
+  # Without this the operator has to infer the route, and OpenClaw
+  # resolves the credential implicitly — which is how agent traffic
+  # silently landed on per-token billing. mode: subscription makes the
+  # operator render chatgpt.com/backend-api, omit apiKey entirely, and
+  # pin auth.order to the OAuth profile.
+  #
+  # Requires agent-office-operator >= v1.7.6. (The operator would infer
+  # `subscription` from codexCredentialsSecretRef above, but stating it
+  # keeps the billing route readable in git.)
+  modelAuth:
+    mode: subscription
