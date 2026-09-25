@@ -95,14 +95,8 @@ spec:
     # only the GitHub release pages it had been told about). web_search is
     # bundled (duckduckgo, no key). browser = the real Chromium on the paired VM
     # node-host (see agentgateway.yaml nodeHostRef).
-    allow: [memory, web_search, web_fetch, browser]
+    allow: [web_fetch]   # no `memory`: nothing from one user is kept for the next; no browser: the runtab_* tools are the source
     mcpServers:
-      - name: governed
-        url: http://mcp-gateway-data-science-gateway-class.agent-office.svc.cluster.local/mcp
-        type: http
-        headers:
-          Authorization: "Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}"
-        envFromSecret: github-mcp-installation-token
       - name: governed
         url: http://mcp-gateway-data-science-gateway-class.agent-office.svc.cluster.local/mcp
         type: http
