@@ -39,10 +39,6 @@ spec:
   #   openclaw-nodehost-<gateway>.service (clone the newsroom unit; token
   #   from Secret <gateway>-token). Without a paired node-host, agents can
   # web_fetch HTML shells but cannot render React sites like redhat.com.
-  nodeHostRef:
-    name: fedora-black-zebra-36-runtab-help
-    namespace: default
-  autoApproveNodeHost: true
   # Bill turns to the subscription, never a metered API key.
   #
   # OpenClaw 2026.7.x folded provider `openai-codex` into canonical
@@ -58,3 +54,9 @@ spec:
   # keeps the billing route readable in git.)
   modelAuth:
     mode: subscription
+  # The Runtab backend's help page talks to this agent through the gateway's
+  # OpenAI-compatible endpoint (/v1/chat/completions), authenticated by the
+  # gateway token, which only the backend's ServiceAccount may read
+  # (Role runtab-help-gateway-token-reader in agent-office).
+  http:
+    chatCompletions: true
