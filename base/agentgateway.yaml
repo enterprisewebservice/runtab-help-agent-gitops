@@ -62,3 +62,13 @@ spec:
   # (Role runtab-help-gateway-token-reader in agent-office).
   http:
     chatCompletions: true
+  # The Runtab Discord server (19 Nov 2026). Secret runtab-help-discord holds one
+  # key, DISCORD_BOT_TOKEN: the token of the Discord application "Runtab Help"
+  # (id 1573102786315558912), created by Dean from his clipboard, never in git.
+  # The operator passes the Secret to the gateway pod as environment variables.
+  # The Discord settings themselves (which server and channels, no direct
+  # messages, the public persona and its three tools) are set BY HAND in the
+  # gateway's openclaw.json on its volume, because the operator has no Discord
+  # block for a gateway yet. What was applied is recorded in the Runtab repo:
+  # deploy/runtab/discord-helper/.
+  envFromSecretRef: runtab-help-discord
