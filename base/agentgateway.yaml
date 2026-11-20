@@ -25,14 +25,23 @@ metadata:
 spec:
   displayName: Runtab help desk
   description: "Dedicated gateway for agent runtab-help"
-  # TEMPORARY (20 Nov 2026): stopped for the OpenClaw 2026.10.33 upgrade so its
-  # volume can be snapshotted with nothing writing to it. The operator keeps the
-  # volume, Service, Route and Secrets and runs zero pods (operator >= v1.7.86).
-  # The help page on runtab.io answers "help is unavailable" while this is set.
-  suspend: true
-  # Same OpenClaw runtime image the AgentWorkstation pins, so the
-  # dedicated pod matches the agent's intended runtime.
-  image: quay-quay-quay-test.apps.salamander.aimlworkbench.com/deanpeterson/openclaw:v2026.7.1
+  # OpenClaw runtime image: 2026.10.33 (extended-stable) since 20 Nov 2026, a
+  # byte-identical copy of ghcr.io/openclaw/openclaw:2026.10.33 (linux/amd64
+  # digest sha256:537c50c4a488...) in the cluster's Quay. It ran v2026.7.1 before.
+  # Needs agent-office-operator >= v1.7.86 (keyed agent roster, gateway-owned
+  # sign-in store).
+  #
+  # GOING BACK IS NOT AN IMAGE CHANGE. From 2026.9.9 the image repairs and
+  # migrates the state on the volume at every start (`openclaw doctor --fix`),
+  # and the old image cannot read the migrated state. The way back is the
+  # volume as it was before the switch: VolumeSnapshot
+  # runtab-help-workspace-pre-openclaw-20261120 in agent-office (taken with the
+  # gateway stopped). Stop the gateway (`suspend: true` here), replace the
+  # volume claim runtab-help-workspace from that snapshot, set v2026.7.1 here,
+  # remove `suspend`.
+  #
+  # base/agentworkstation.yaml names an image too; the operator reads only this one.
+  image: quay-quay-quay-test.apps.salamander.aimlworkbench.com/deanpeterson/openclaw:v2026.10.33
   # Codex-backed agent with its own sign-in: runtab-help-codex-credentials is
   # synced by ESO from Vault agent-office/codex/runtab-help (agent-office
   # cluster/secrets/codex-gateway-credentials.yaml). Never share one sign-in
