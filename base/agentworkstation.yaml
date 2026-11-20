@@ -107,9 +107,17 @@ spec:
     # below) is accepted for agent-office/runtab-support only.
     # Before this list (set by hand on 20 Nov 2026, declared here since operator v1.7.86) every
     # new conversation was offered 224 tools.
-    # To check it: the status condition ToolsRestricted on this workstation, and the
-    # number after "toolCount" in the session.started line of a new conversation's
-    # *.trajectory.jsonl in the gateway pod (the lists in that file are cut at 64 entries).
+    # To check it: the status condition ToolsRestricted on this workstation, and what the
+    # gateway itself reports for a conversation (OpenClaw 2026.10.33, on this gateway since
+    # 20 Nov 2026):
+    #   openclaw gateway call tools.effective --params '{"sessionKey":"<key>"}' --json
+    # `groups` lists the usable tools and `toolAccess.tools` every built-in with its status and
+    # reason; the governed tools appear once a run in that conversation has connected the tool
+    # gateway. Keys: openclaw sessions list --agent runtab-help --json (the website's
+    # conversations are agent:runtab-help:openai-user:<email>).
+    # On OpenClaw 2026.7.x the check was the number after "toolCount" in the session.started
+    # line of a conversation's *.trajectory.jsonl. On 2026.10.33 that number is 4 and no longer
+    # counts the allowed tools, and conversations are no longer files.
     restrictTo:
       - read
       - governed__runtab_account
