@@ -56,6 +56,22 @@ spec:
   # keeps the billing route readable in git.)
   modelAuth:
     mode: subscription
+    # The models this gateway lists on the subscription route (19 Nov 2026).
+    # Without this the operator lists its built-in set (gpt-5.6-sol, gpt-5.6,
+    # gpt-5.5, gpt-5.4); OpenAI has retired the last two from ChatGPT sign-in.
+    # gpt-6.2-sol is what the agent runs on. OpenClaw 2026.7.1 does not know
+    # that model yet: it passes the id through to OpenAI (proven by a test
+    # turn) and lists it as text-only with a 200k context, which is enough for
+    # this text help desk. gpt-5.6-sol stays listed as the way back: put it
+    # back in base/agentworkstation.yaml and the agent runs on it again.
+    # A model id OpenAI does not know pauses every agent on the gateway
+    # (provider cooldown), so prove a new id with a test turn before it goes
+    # in here:  openclaw agent --agent <id> --model openai/<model> ...
+    models:
+      - id: gpt-6.2-sol
+        name: GPT-6.2 Sol
+      - id: gpt-5.6-sol
+        name: GPT-5.6 Sol
   # The Runtab backend's help page talks to this agent through the gateway's
   # OpenAI-compatible endpoint (/v1/chat/completions), authenticated by the
   # gateway token, which only the backend's ServiceAccount may read
