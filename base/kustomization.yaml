@@ -20,3 +20,5 @@ resources:
   # operator never mints a gateway; it's a plain declarative resource in
   # this repo, so deleting the repo removes it. Shared agents omit this.
   - agentgateway.yaml
+  # This desk's own key at the tool gateway: accepted for its one tool server only.
+  - mcp-caller.yaml
