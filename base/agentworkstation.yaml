@@ -97,6 +97,26 @@ spec:
     # bundled (duckduckgo, no key). browser = the real Chromium on the paired VM
     # node-host (see agentgateway.yaml nodeHostRef).
     allow: [web_fetch]   # no `memory`: nothing from one user is kept for the next; no browser: the runtab_* tools are the source
+    # ENFORCED tool list (operator >= v1.7.86). The agent is offered, and may call, exactly these
+    # tools and nothing else: no shell, no file editing, no web fetch or search, no browser, no
+    # sub-agents, and no other server on the tool gateway. `allow` above is NOT a limit: it only
+    # tells the operator what to switch on in the gateway, and this list overrides what it suggests.
+    # `read` is fenced to this agent's own workspace folder (the operator renders
+    # fs.workspaceOnly with the list); the agent reads its skill file with it.
+    # The tool gateway enforces the same boundary a second time: this desk's key (mcpServers
+    # below) is accepted for agent-office/runtab-support only.
+    # Before this list (set by hand on 20 Nov 2026, declared here since operator v1.7.86) every
+    # new conversation was offered 224 tools.
+    # To check it: the status condition ToolsRestricted on this workstation, and the
+    # number after "toolCount" in the session.started line of a new conversation's
+    # *.trajectory.jsonl in the gateway pod (the lists in that file are cut at 64 entries).
+    restrictTo:
+      - read
+      - governed__runtab_account
+      - governed__runtab_link
+      - governed__runtab_activity
+      - governed__runtab_release
+      - governed__runtab_knowledge
     mcpServers:
       - name: governed
         url: http://mcp-gateway-data-science-gateway-class.agent-office.svc.cluster.local/mcp
