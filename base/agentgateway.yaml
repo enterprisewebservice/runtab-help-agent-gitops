@@ -25,6 +25,11 @@ metadata:
 spec:
   displayName: Runtab help desk
   description: "Dedicated gateway for agent runtab-help"
+  # TEMPORARY (20 Nov 2026): stopped for the OpenClaw 2026.10.33 upgrade so its
+  # volume can be snapshotted with nothing writing to it. The operator keeps the
+  # volume, Service, Route and Secrets and runs zero pods (operator >= v1.7.86).
+  # The help page on runtab.io answers "help is unavailable" while this is set.
+  suspend: true
   # Same OpenClaw runtime image the AgentWorkstation pins, so the
   # dedicated pod matches the agent's intended runtime.
   image: quay-quay-quay-test.apps.salamander.aimlworkbench.com/deanpeterson/openclaw:v2026.7.1
